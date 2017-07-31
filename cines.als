@@ -1,11 +1,13 @@
 module cines
 
+---------------------------ASSINATURAS-----------------------------
+
 sig Usuario {
 	ingressos: set Ingresso
 }
 
 sig Ingresso {
-	filmeReservado: one Filme
+	cadeiraReservada: one Cadeira
 }
 
 sig Filme {
@@ -13,28 +15,63 @@ sig Filme {
 }
 
 sig Sessao {
-	sala: one Sala
+	sala: one Sala,
+	cadeiras: set Cadeira
 }
 
 sig Sala {
-	cadeiras: set Cadeira
 }
 
 sig Cadeira {}
 
+----------------------------PREDICADOS---------------------------
 
+pred sessaoComUnicaSala[s:Sala] {
+	one s.~sala
+}
+
+pred sessaoComUnicoFilmes[s:Sessao] {
+	one s.~sessoes
+}
+
+pred ingresoTemUmDono[i:Ingresso] {
+	one i.~ingressos
+}
+
+pred cadeiraDeUnicaSessao[c:Cadeira] {
+	one c.~cadeiras
+}
+
+pred cadeiraReservadaAUnicoIngresso[c:Cadeira] {
+	lone c.~cadeiraReservada
+}
+
+pred quantidadeMaximaSessoesPorFilme[f:Filme] {
+	#(f.sessoes) <= 2
+}
+
+pred quantidadeMinimaSessoesPorFilme[f:Filme] {
+	#(f.sessoes) >= 1
+}
+
+pred quantidadeDeCadeirasPorSessao[s:Sessao] {
+	#(s.cadeiras) = 4
+}
 -------------------------------- FATOS -----------------------------
 
-fact invariantes  {
-	all s: Sala | one s.~sala
-	all s: Sessao | one s.~sessoes
-	all i: Ingresso | one i.~ingressos
-	all c: Cadeira | one c.~cadeiras
-	all f: Filme | #(f.sessoes) <= 2 && #(f.sessoes) > 0
-	all s: Sala | #(s.cadeiras) = 2
-	all f: Filme | #(f.~filmeReservado) <= 2
+fact invariantes {
+	all sala: Sala | sessaoComUnicaSala[sala]
+	all sessao: Sessao | sessaoComUnicoFilmes[sessao]
+	all ingresso: Ingresso | ingresoTemUmDono[ingresso]
+	all cadeira: Cadeira | cadeiraDeUnicaSessao[cadeira]
+	all cadeira: Cadeira | cadeiraReservadaAUnicoIngresso[cadeira]
+}
+
+fact quantidadeDeInstancias {
+	all filme: Filme | quantidadeMaximaSessoesPorFilme[filme] && quantidadeMinimaSessoesPorFilme[filme]
+	all sessao: Sessao | quantidadeDeCadeirasPorSessao[sessao]
 }
 
 pred main [] {}
 
-run main for 8 but exactly 3 Usuario
+run main for 14 but exactly 1 Usuario
