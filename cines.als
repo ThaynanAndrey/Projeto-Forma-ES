@@ -55,7 +55,7 @@ pred quantidadeMinimaSessoesPorFilme[f:Filme] {
 }
 
 pred quantidadeDeCadeirasPorSessao[s:Sessao] {
-	#(s.cadeiras) = 4
+	#(s.cadeiras) = 84
 }
 -------------------------------- FATOS -----------------------------
 
@@ -74,4 +74,4 @@ fact quantidadeDeInstancias {
 
 pred main [] {}
 
-run main for 14 but exactly 1 Usuario
+run main for 84
